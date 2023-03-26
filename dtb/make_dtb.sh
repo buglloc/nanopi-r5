@@ -3,7 +3,7 @@
 set -e
 
 main() {
-    local lv='6.2.2'
+    local lv='6.1.18'
     local rkpath="linux-$lv/arch/arm64/boot/dts/rockchip"
 
     if [ '_clean' = "_$1" ]; then
