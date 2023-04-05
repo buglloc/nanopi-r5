@@ -23,24 +23,11 @@ main() {
 
     if [ ! -d "linux-$lv" ]; then
         tar "xavf" "linux-$lv.tar.xz" "linux-$lv/include/dt-bindings" "linux-$lv/include/uapi" "$rkpath"
-        cp rk3568-nanopi-r5.dts "$rkpath"
+        cp dts/rk3568-nanopi*.dts* "$rkpath"
     fi
 
-    if [ '_links' = "_$1" ]; then
-#        ln -sf "$rkpath/rk3568-nanopi-r5.dts"
-        ln -sf "$rkpath/rk3568.dtsi"
-        ln -sf "$rkpath/rk356x.dtsi"
-        ln -sf "$rkpath/rk3568-pinctrl.dtsi"
-        echo '\nlinks created\n'
-        exit 0
-    fi
-
-    # build
-    dt=rk3568-nanopi-r5
-    gcc -I "linux-$lv/include" -E -nostdinc -undef -D__DTS__ -x assembler-with-cpp -o ${dt}-top.dts "$rkpath/${dt}.dts"
-    dtc -@ -I dts -O dtb -o ${dt}.dtb ${dt}-top.dts
-
-    echo "\n${cya}build complete: ${dt}.dtb${rst}\n"
+    build rk3568-nanopi-r5s
+    build rk3568-nanopi-r5c
 }
 
 # check if utility program is installed
@@ -55,6 +42,13 @@ check_installed() {
         echo "   run: ${bld}${grn}sudo apt update && sudo apt -y install$todo${rst}\n"
         exit 1
     fi
+}
+
+build() {
+    local dt=$1
+    gcc -I linux-$lv/include -E -nostdinc -undef -D__DTS__ -x assembler-with-cpp -o ${dt}-top.dts $rkpath/${dt}.dts
+    dtc -@ -I dts -O dtb -o ${dt}.dtb ${dt}-top.dts
+    echo "\n${cya}build complete: ${dt}.dtb${rst}\n"
 }
 
 rst='\033[m'
